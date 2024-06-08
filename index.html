@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ganhe Dinheiro</title>
-    <meta name="monetag" content="58f32ae93769523e69ab5610566c6f66">
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -141,302 +140,188 @@
             padding: 5px 0;
             border-bottom: 1px solid #ddd;
         }
-        font-family: 'Arial', sans-serif;
-        background: linear-gradient(to right, #00c6ff, #0072ff);
-        margin: 0;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        height: 100vh;
-        color: #fff;
-        overflow: hidden;
-    }
-    .container {
-        background: #fff;
-        color: #333;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-        text-align: center;
-        max-width: 400px;
-        width: 100%;
-        margin-top: 60px;
-        margin-bottom: 20px;
-    }
-    .money {
-        font-size: 24px;
-        color: #28a745;
-        margin-bottom: 20px;
-    }
-    .btn {
-        display: inline-block;
-        padding: 15px 30px;
-        font-size: 18px;
-        color: #fff;
-        background-color: #007bff;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.3s;
-        margin: 10px 0;
-    }
-    .btn:hover {
-        background-color: #0056b3;
-    }
-    .withdraw {
-        margin-top: 20px;
-        color: #555;
-    }
-    .history-list .earn {
-        color: green;
-    }
-    .history-list .pending {
-        color: orange;
-    }
-    /* Modal Styles */
-    .modal {
-        display: none;
-        position: fixed;
-        z-index: 1;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        overflow: auto;
-        background-color: rgba(0, 0, 0, 0.5);
-        justify-content: center;
-        align-items: center;
-    }
-    .modal-content {
-        background-color: #fff;
-        padding: 20px;
-        border-radius: 10px;
-        text-align: center;
-        max-width: 400px;
-        width: 80%;
-        color: #333;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    }
-    .modal-content p {
-        margin: 10px 0;
-    }
-    .close-btn {
-        background-color: #007bff;
-        color: #fff;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.3s;
-    }
-    .close-btn:hover {
-        background-color: #0056b3;
-    }
-        <style>
-    /* Outras regras CSS... */
-    .history-list .earn {
-        color: green;
-    }
-    .history-list .pending {
-        color: orange;
-    }
-</style>
-<style>
-    /* Outras regras CSS... */
-    .history-list .earn {
-        color: green;
-    }
-    .history-list .pending {
-        color: orange;
-    }
-</style>
+        .history-list .earn {
+            color: green;
+        }
+        .history-list .pending {
+            color: orange;
+        }
+        .close-btn {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .close-btn:hover {
+            background-color: #0056b3;
+        }
     </style>
 </head>
 <body>
-
-<div class="marquee-container">
-    <div class="marquee" id="marquee">
-        <!-- Conteúdo gerado pelo JavaScript -->
+    <div class="marquee-container">
+        <div class="marquee" id="marquee"></div>
     </div>
-</div>
-<div id="withdrawMessageModal" class="modal">
-    <div class="modal-content">
-        <p id="withdrawMessage"></p>
-        <button class="close-btn" onclick="closeWithdrawMessageModal()">Fechar</button>
-    </div>
-</div>
-
-<div class="container">
-    <div class="money">Saldo: R$ <span id="balance">0.00</span></div>
-    <button class="btn" onclick="earnMoney()">Clique e ganhe 10 centavos</button>
-    <div class="withdraw">Para sacar, clique <a href="javascript:void(0);" onclick="showWithdrawModal()">aqui</a></div>
-    <div class="options">
-        <button class="btn option-btn" onclick="share()">Compartilhar</button>
-        <button class="btn option-btn" onclick="invite()">Convidar Amigos</button>
-        <button class="btn option-btn" onclick="showHistory()">Histórico</button>
-    </div>
-</div>
-
-<div id="withdrawModal" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeWithdrawModal()">&times;</span>
-        <h2>Saque</h2>
-        <div class="form-group">
-            <label for="pix-type">Tipo de Chave PIX</label>
-            <select id="pix-type">
-                <option value="cpf">CPF</option>
-                <option value="cnpj">CNPJ</option>
-                <option value="phone">Telefone</option>
-                <option value="email">E-mail</option>
-                <option value="random">Chave Aleatória</option>
-            </select>
+    <div id="withdrawMessageModal" class="modal">
+        <div class="modal-content">
+            <p id="withdrawMessage"></p>
+            <button class="close-btn" onclick="closeWithdrawMessageModal()">Fechar</button>
         </div>
-        <div class="form-group">
-            <label for="pix-key">Chave PIX</label>
-            <input type="text" id="pix-key" placeholder="Digite sua chave PIX">
-        </div>
-        <div class="form-group">
-            <label for="withdraw-amount">Valor</label>
-            <input type="number" id="withdraw-amount" placeholder="Digite o valor a sacar">
-        </div>
-        <button class="btn" onclick="withdraw()">Sacar</button>
     </div>
-</div>
-
-<div id="historyModal" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeHistoryModal()">&times;</span>
-        <h2>Histórico de Transações</h2>
-        <ul id="history-list" class="history-list">
-            <!-- Histórico de transações gerado pelo JavaScript -->
-        </ul>
+    <div class="container">
+        <div class="money">Saldo: R$ <span id="balance">0.00</span></div>
+        <button class="btn" onclick="goToAd()">Clique e ganhe 10 centavos</button>
+        <div class="withdraw">Para sacar, clique <a href="javascript:void(0);" onclick="showWithdrawModal()">aqui</a></div>
+        <div class="options">
+            <button class="btn option-btn" onclick="share()">Compartilhar</button>
+            <button class="btn option-btn" onclick="invite()">Convidar Amigos</button>
+            <button class="btn option-btn" onclick="showHistory()">Histórico</button>
+        </div>
     </div>
-</div>
-<script>
-    let balance = 0;
-    const names = [
-        'João', 'Maria', 'Pedro', 'Ana', 'Lucas', 'Luiza', 'Carlos', 'Bianca',
-        'Fernanda', 'Ricardo', 'Roberta', 'Sérgio', 'Patrícia', 'Gustavo', 'Mariana',
-        'Eduardo', 'Cláudia', 'Daniel', 'Rafaela', 'André', 'Juliana', 'Thiago',
-        'Camila', 'Bruno', 'Aline', 'Felipe', 'Renata', 'Rodrigo', 'Larissa',
-        'Leonardo', 'Sara', 'Marcelo', 'Vanessa', 'Diego', 'Isabela', 'Rafael',
-        'Tatiana', 'Igor', 'Nicole', 'Fábio', 'Yasmin', 'Gabriel', 'Manuela',
-        'Vitor', 'Beatriz', 'Henrique', 'Daniela', 'Renan', 'Letícia', 'Murilo',
-        'Natália', 'Fernando', 'Luana', 'José', 'Vitória', 'Caio', 'Lorena',
-        'Matheus', 'Alice', 'Antônio', 'Débora', 'Bruna', 'Wagner', 'Cecília',
-        'Alexandre', 'Helena', 'Paulo', 'Catarina', 'Samuel', 'Eduarda', 'Jorge',
-        'Marina', 'Anderson', 'Ester', 'Sandro', 'Cristina', 'Rômulo', 'Milena',
-        'Leandro', 'Regina', 'Tadeu', 'Viviane', 'Rogério', 'Adriana', 'Renato',
-        'Júlia', 'Brenda', 'Enzo', 'Sônia', 'Alan', 'Lorraine', 'Miguel',
-        'Raquel', 'Joana', 'Hugo', 'Carla', 'Francisco', 'Alana', 'Otávio', 'Vânia'
-    ];
-    const transactions = [];
+    <div id="withdrawModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeWithdrawModal()">&times;</span>
+            <h2>Saque</h2>
+            <div class="form-group">
+                <label for="pix-type">Tipo de Chave PIX</label>
+                <select id="pix-type">
+                    <option value="cpf">CPF</option>
+                    <option value="cnpj">CNPJ</option>
+                    <option value="phone">Telefone</option>
+                    <option value="email">E-mail</option>
+                    <option value="random">Chave Aleatória</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="pix-key">Chave PIX</label>
+                <input type="text" id="pix-key" placeholder="Digite sua chave PIX">
+            </div>
+            <div class="form-group">
+                <label for="withdraw-amount">Valor</label>
+                <input type="number" id="withdraw-amount" placeholder="Digite o valor a sacar">
+            </div>
+            <button class="btn" onclick="withdraw()">Sacar</button>
+        </div>
+    </div>
+    <div id="historyModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeHistoryModal()">&times;</span>
+            <h2>Histórico de Transações</h2>
+            <ul id="history-list" class="history-list"></ul>
+        </div>
+    </div>
+    <script>
+        let balance = parseFloat(localStorage.getItem('balance')) || 0;
+        const names = [
+            'João', 'Maria', 'Pedro', 'Ana', 'Lucas', 'Luiza', 'Carlos', 'Bianca',
+            'Fernanda', 'Ricardo', 'Roberta', 'duarda','Cristina', 'Rita', 'Leandro', 'Valéria', 'Otávio', 'Verônica', 'Marcela',
+            'Douglas', 'Tereza', 'Wilson', 'Jéssica', 'Roberto', 'Fabiana', 'Emerson'
+        ];
 
-    function getRandomName() {
-        return names[Math.floor(Math.random() * names.length)];
-    }
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.getElementById('balance').innerText = balance.toFixed(2);
+            loadMarquee();
+            if (sessionStorage.getItem('returning') === 'true') {
+                sessionStorage.removeItem('returning');
+                addMoney(0.10);
+            }
+        });
 
-    function getRandomAmount() {
-        return (Math.random() * 50 + 1).toFixed(2);
-    }
-
-    function earnMoney() {
-        balance += 0.01;
-        document.getElementById('balance').textContent = balance.toFixed(2);
-        transactions.push({ type: 'earn', amount: 0.01, date: new Date().toLocaleString() });
-        updateHistory();
-    }
-
-    function updateMarquee() {
-        const marquee = document.getElementById('marquee');
-        for (let i = 0; i < 100; i++) {
-            const name = getRandomName();
-            const amount = getRandomAmount();
-            const span = document.createElement('span');
-            span.textContent = `${name} sacou R$${amount} `;
-            marquee.appendChild(span);
-        }
-    }
-
-    function share() {
-        alert('Compartilhe nosso site com seus amigos!');
-    }
-
-    function invite() {
-        const dummy = document.createElement('input');
-        const text = window.location.href;
-
-        document.body.appendChild(dummy);
-        dummy.value = text;
-        dummy.select();
-        document.execCommand('copy');
-        document.body.removeChild(dummy);
-
-        alert('Link copiado para a área de transferência!');
-    }
-
-    function withdraw() {
-        const pixType = document.getElementById('pix-type').value;
-        const pixKey = document.getElementById('pix-key').value;
-        const amount = parseFloat(document.getElementById('withdraw-amount').value);
-
-        if (!pixKey || isNaN(amount) || amount < 100 || amount > balance) {
-            alert('Por favor, insira uma chave PIX válida e um valor de saque (mínimo R$100,00).');
-            return;
+        function addMoney(amount) {
+            balance += amount;
+            localStorage.setItem('balance', balance.toFixed(2));
+            document.getElementById('balance').innerText = balance.toFixed(2);
+            addToHistory('earn', 'R$ ' + amount.toFixed(2));
         }
 
-        balance -= amount;
-        document.getElementById('balance').textContent = balance.toFixed(2);
-        transactions.push({
-            type: 'withdraw',
-            amount: amount,
-            date: new Date().toLocaleString(),
-            pixType: pixType,
-            pixKey: pixKey,
-            status: 'pending'
-        });
-        updateHistory();
-        showWithdrawMessage(amount);
-    }
+        function goToAd() {
+            sessionStorage.setItem('returning', 'true');
+            window.location.href = "https://fir3.net/nw6xpBlqa";
+        }
 
-    function updateHistory() {
-        const historyList = document.getElementById('history-list');
-        historyList.innerHTML = '';
-        transactions.forEach(transaction => {
-            const li = document.createElement('li');
-            li.className = transaction.type === 'earn' ? 'earn' : 'pending';
-            li.textContent = `${transaction.date} - ${transaction.type === 'earn' ? 'Ganho' : 'Saque'} de R$${transaction.amount.toFixed(2)} ${transaction.type === 'withdraw' ? `(Chave: ${transaction.pixType} - ${transaction.pixKey})` : ''} ${transaction.status === 'pending' ? '- analise' : ''}`;
-            historyList.appendChild(li);
-        });
-    }
+        function showWithdrawModal() {
+            document.getElementById('withdrawModal').style.display = 'block';
+        }
 
-    function showWithdrawModal() {
-        document.getElementById('withdrawModal').style.display = 'block';
-    }
+        function closeWithdrawModal() {
+            document.getElementById('withdrawModal').style.display = 'none';
+        }
 
-    function closeWithdrawModal() {
-        document.getElementById('withdrawModal').style.display = 'none';
-    }
+        function withdraw() {
+            const pixType = document.getElementById('pix-type').value;
+            const pixKey = document.getElementById('pix-key').value;
+            const withdrawAmount = parseFloat(document.getElementById('withdraw-amount').value);
 
-    function showHistory() {
-        document.getElementById('historyModal').style.display = 'block';
-    }
+            if (!pixKey || isNaN(withdrawAmount) || withdrawAmount <= 0) {
+                alert('Por favor, preencha todos os campos corretamente.');
+                return;
+            }
 
-    function closeHistoryModal() {
-        document.getElementById('historyModal').style.display = 'none';
-    }
+            if (withdrawAmount > balance) {
+                alert('Saldo insuficiente.');
+                return;
+            }
 
-    function showWithdrawMessage(amount) {
-        const message = `Você solicitou o saque de R$${amount.toFixed(2)} em ${new Date().toLocaleString()}.`;
-        document.getElementById('withdrawMessage').textContent = message;
-        document.getElementById('withdrawMessageModal').style.display = 'flex';
-    }
+            balance -= withdrawAmount;
+            localStorage.setItem('balance', balance.toFixed(2));
+            document.getElementById('balance').innerText = balance.toFixed(2);
+            closeWithdrawModal();
+            document.getElementById('withdrawMessage').innerText = `Saque de R$ ${withdrawAmount.toFixed(2)} solicitado com sucesso! Chave PIX: ${pixKey}`;
+            document.getElementById('withdrawMessageModal').style.display = 'block';
+            addToHistory('pending', 'R$ ' + withdrawAmount.toFixed(2));
+        }
 
-    function closeWithdrawMessageModal() {
-        document.getElementById('withdrawMessageModal').style.display = 'none';
-    }
+        function closeWithdrawMessageModal() {
+            document.getElementById('withdrawMessageModal').style.display = 'none';
+        }
 
-    updateMarquee();
-</script>
+        function share() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Ganhe Dinheiro',
+                    text: 'Clique no link para começar a ganhar dinheiro!',
+                    url: window.location.href
+                }).then(() => {
+                    console.log('Compartilhamento bem-sucedido.');
+                }).catch((error) => {
+                    console.log('Erro no compartilhamento:', error);
+                });
+            } else {
+                alert('Seu navegador não suporta a API de compartilhamento.');
+            }
+        }
+
+        function invite() {
+            prompt('Copie o link abaixo e envie para seus amigos:', window.location.href);
+        }
+
+        function showHistory() {
+            document.getElementById('history-list').innerHTML = localStorage.getItem('history') || '';
+            document.getElementById('historyModal').style.display = 'block';
+        }
+
+        function closeHistoryModal() {
+            document.getElementById('historyModal').style.display = 'none';
+        }
+
+        function addToHistory(type, amount) {
+            let history = document.getElementById('history-list').innerHTML;
+            let entry = `<li class="${type}">${type === 'earn' ? 'Ganhos: ' : 'Pendente: '}${amount}</li>`;
+            history = entry + history;
+            localStorage.setItem('history', history);
+        }
+
+        function loadMarquee() {
+            const marquee = document.getElementById('marquee');
+            marquee.innerHTML = '';
+            for (let i = 0; i < names.length; i++) {
+                const span = document.createElement('span');
+                span.textContent = `${names[i]} ganhou R$ ${(Math.random() * 10 + 0.1).toFixed(2)} `;
+                marquee.appendChild(span);
+            }
+        }
+    </script>
 </body>
 </html>
