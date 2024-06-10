@@ -173,7 +173,7 @@
         </div>
     </div>
     <div class="container">
-        <div class="money">Saldo: R$ <span id="balance">5.00</span></div>
+        <div class="money">Saldo: R$ <span id="balance">0.00</span></div>
         <button class="btn" onclick="goToAd()">Clique e ganhe 8 centavos</button>
         <div class="withdraw">Para sacar, clique <a href="javascript:void(0);" onclick="showWithdrawModal()">aqui</a></div>
         <div class="options">
@@ -227,7 +227,7 @@
             loadMarquee();
             if (sessionStorage.getItem('returning') === 'true') {
                 sessionStorage.removeItem('returning');
-                addMoney(0.05);
+                addMoney(0.08);
             }
         });
 
