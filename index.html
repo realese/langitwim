@@ -173,8 +173,8 @@
         </div>
     </div>
     <div class="container">
-        <div class="money">Saldo: R$ <span id="balance">0.00</span></div>
-        <button class="btn" onclick="goToAd()">Clique e ganhe 3 centavos</button>
+        <div class="money">Saldo: R$ <span id="balance">5.00</span></div>
+        <button class="btn" onclick="goToAd()">Clique e ganhe 8 centavos</button>
         <div class="withdraw">Para sacar, clique <a href="javascript:void(0);" onclick="showWithdrawModal()">aqui</a></div>
         <div class="options">
             <button class="btn option-btn" onclick="share()">Compartilhar</button>
@@ -227,7 +227,7 @@
             loadMarquee();
             if (sessionStorage.getItem('returning') === 'true') {
                 sessionStorage.removeItem('returning');
-                addMoney(0.03);
+                addMoney(0.05);
             }
         });
 
@@ -240,7 +240,7 @@
 
         function goToAd() {
             sessionStorage.setItem('returning', 'true');
-            window.location.href = "https://fir3.net/nw6xpBlqa";
+            window.location.href = "https://ouo.io/VvijCM";
         }
 
         function showWithdrawModal() {
@@ -252,28 +252,33 @@
         }
 
         function withdraw() {
-            const pixType = document.getElementById('pix-type').value;
-            const pixKey = document.getElementById('pix-key').value;
-            const withdrawAmount = parseFloat(document.getElementById('withdraw-amount').value);
+    const pixType = document.getElementById('pix-type').value;
+    const pixKey = document.getElementById('pix-key').value;
+    const withdrawAmount = parseFloat(document.getElementById('withdraw-amount').value);
 
-            if (!pixKey || isNaN(withdrawAmount) || withdrawAmount <= 0) {
-                alert('Por favor, preencha todos os campos corretamente.');
-                return;
-            }
+    if (!pixKey || isNaN(withdrawAmount) || withdrawAmount <= 0) {
+        alert('Por favor, preencha todos os campos corretamente.');
+        return;
+    }
 
-            if (withdrawAmount > balance) {
-                alert('Saldo insuficiente.');
-                return;
-            }
+    if (withdrawAmount > balance) {
+        alert('Saldo insuficiente.');
+        return;
+    }
 
-            balance -= withdrawAmount;
-            localStorage.setItem('balance', balance.toFixed(2));
-            document.getElementById('balance').innerText = balance.toFixed(2);
-            closeWithdrawModal();
-            document.getElementById('withdrawMessage').innerText = `Saque de R$ ${withdrawAmount.toFixed(2)} solicitado com sucesso! Chave PIX: ${pixKey}`;
-            document.getElementById('withdrawMessageModal').style.display = 'block';
-            addToHistory('pending', 'R$ ' + withdrawAmount.toFixed(2));
-        }
+    if (withdrawAmount < 40) {  // Altere este valor para 40
+        alert('O valor mínimo para saque é de R$ 40.');
+        return;
+    }
+
+    balance -= withdrawAmount;
+    localStorage.setItem('balance', balance.toFixed(2));
+    document.getElementById('balance').innerText = balance.toFixed(2);
+    closeWithdrawModal();
+    document.getElementById('withdrawMessage').innerText = `Saque de R$ ${withdrawAmount.toFixed(2)} solicitado com sucesso! Chave PIX: ${pixKey}`;
+    document.getElementById('withdrawMessageModal').style.display = 'block';
+    addToHistory('pending', 'R$ ' + withdrawAmount.toFixed(2));
+}
 
         function closeWithdrawMessageModal() {
             document.getElementById('withdrawMessageModal').style.display = 'none';
