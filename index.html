@@ -395,8 +395,14 @@
                 <div class="ia-command" data-command="Quais são os gêneros únicos?">Gêneros únicos</div>
                 <div class="ia-command" data-command="Qual a média de idade?">Média de idade</div>
                 <div class="ia-command" data-command="Sugira categorias para análise">Sugerir análises</div>
-            </div>
             
+            </div>
+            <div class="ia-commands">
+                <!-- Adicione isso junto com os outros comandos -->
+                <div class="ia-command" data-command="Quais profissões existem?">Listar Profissões</div>
+                <div class="ia-command" data-command="Exportar contatos">Exportar CSV</div>
+                <div class="ia-command" data-command="Dados faltantes">Ver Faltantes</div>
+            </div>
             <textarea id="inputIA" placeholder="Digite um comando ou pergunte algo sobre os dados... Ex: 'Quantas pessoas têm mais de 30 anos?'" rows="4"></textarea>
             
             <div class="text-center">
@@ -593,39 +599,47 @@
 
         // Organizar dados
         function organizarDados() {
-            const nomes = document.querySelector(".nome").value.split('\n');
-            const idades = document.querySelector(".idade").value.split('\n');
-            const telefones = document.querySelector(".telefone").value.split('\n');
-            const generos = document.querySelector(".genero").value.split('\n');
-            const sexos = document.querySelector(".sexo").value.split('\n');
-            const escolaridades = document.querySelector(".escolaridade").value.split('\n');
-            const profissoes = document.querySelector(".profissao").value.split('\n');
-            
-            const planilhaDestino = document.querySelector("#planilhaDestino tbody");
-            planilhaDestino.innerHTML = "";
-            
-            for (let i = 0; i < nomes.length; i++) {
-                if (nomes[i].trim()) {
-                    let linha = `<tr class="table-row">
-                        <td>${i + 1}</td>
-                        <td contenteditable="true">${nomes[i] || ''}</td>
-                        <td contenteditable="true">${idades[i] || ''}</td>
-                        <td contenteditable="true">${telefones[i] || ''}</td>
-                        <td contenteditable="true">${generos[i] || ''}</td>
-                        <td contenteditable="true">${sexos[i] || ''}</td>
-                        <td contenteditable="true">${escolaridades[i] || ''}</td>
-                        <td contenteditable="true">${profissoes[i] || ''}</td>
-                    </tr>`;
-                    planilhaDestino.innerHTML += linha;
-                }
-            }
-            
-            if (nomes.length > 0 && nomes[0].trim()) {
-                showAlert(`Dados organizados com ${nomes.length} registros!`, 'success');
-            } else {
-                showAlert('Nenhum dado válido encontrado para organizar.', 'warning');
-            }
+    // 1. Pega os dados das colunas ORIGINAIS + NOVAS COLUNAS
+    const dados = {};
+    
+    // Pega todas as colunas (até as adicionadas)
+    document.querySelectorAll("#planilhaFonte th").forEach((th, index) => {
+        const colunaId = th.id || `coluna-${index}`; // Se não tiver ID, cria um
+        const textarea = document.querySelector(`#planilhaFonte tbody td:nth-child(${index + 1}) textarea`);
+        
+        if (textarea) {
+            dados[colunaId] = textarea.value.split('\n');
         }
+    });
+
+    // 2. Limpa e preenche a Planilha Destino
+    const planilhaDestino = document.querySelector("#planilhaDestino tbody");
+    planilhaDestino.innerHTML = "";
+
+    const numLinhas = dados["colNome"] ? dados["colNome"].length : 0;
+    
+    for (let i = 0; i < numLinhas; i++) {
+        if (dados["colNome"][i].trim()) {
+            let linhaHTML = `<tr><td>${i + 1}</td>`; // Coluna de índice
+            
+            // Adiciona TODAS as colunas (inclusive as novas)
+            document.querySelectorAll("#planilhaFonte th").forEach((th, colIndex) => {
+                const colunaId = th.id || `coluna-${colIndex}`;
+                const valor = dados[colunaId] ? dados[colunaId][i] || '' : '';
+                linhaHTML += `<td contenteditable="true">${valor}</td>`;
+            });
+            
+            linhaHTML += "</tr>";
+            planilhaDestino.innerHTML += linhaHTML;
+        }
+    }
+    
+    if (numLinhas > 0) {
+        showAlert(`Dados organizados com ${numLinhas} registros!`, 'success');
+    } else {
+        showAlert('Nenhum dado válido encontrado para organizar.', 'warning');
+    }
+}
 
         document.getElementById("btnOrganizarDados").addEventListener("click", organizarDados);
 
@@ -1026,17 +1040,295 @@
         
         // Adicione também quando criar novas colunas
         document.getElementById("btnAdicionarColuna").addEventListener("click", function() {
-            const nomeNovaColuna = prompt("Digite o nome da nova coluna:");
+    const nomeNovaColuna = prompt("Digite o nome da nova coluna:");
+
+    if (nomeNovaColuna) {
+        // 1. Adiciona o cabeçalho na Planilha Fonte
+        const headerFonte = document.getElementById("headerPlanilhaFonte");
+        const novoTh = document.createElement("th");
+        novoTh.textContent = nomeNovaColuna;
+        novoTh.id = `col${nomeNovaColuna.replace(/\s+/g, '')}`; // Ex: "Cidade" vira "colCidade"
+        headerFonte.appendChild(novoTh);
+
+        // 2. Adiciona o textarea na Planilha Fonte
+        document.querySelectorAll("#planilhaFonte tbody tr").forEach(tr => {
+            const novoTd = document.createElement("td");
+            const novoTextarea = document.createElement("textarea");
+            novoTextarea.className = "dados-coluna";
+            novoTextarea.placeholder = `Digite ${nomeNovaColuna.toLowerCase()}`;
+            novoTd.appendChild(novoTextarea);
+            tr.appendChild(novoTd);
+        });
+
+        // 3. Adiciona o cabeçalho na Planilha Destino
+        const headerDestino = document.getElementById("headerPlanilhaDestino");
+        const novoThDestino = document.createElement("th");
+        novoThDestino.textContent = nomeNovaColuna;
+        headerDestino.appendChild(novoThDestino);
+
+        showAlert(`Coluna "${nomeNovaColuna}" adicionada com sucesso!`, 'success');
+    }
+});
+        function organizarDados() {
+    // 1. Pega os dados das colunas ORIGINAIS + NOVAS COLUNAS
+    const dados = {};
+    
+    // Pega todas as colunas (até as adicionadas)
+    document.querySelectorAll("#planilhaFonte th").forEach((th, index) => {
+        const colunaId = th.id || `coluna-${index}`; // Se não tiver ID, cria um
+        const textarea = document.querySelector(`#planilhaFonte tbody td:nth-child(${index + 1}) textarea`);
+        
+        if (textarea) {
+            dados[colunaId] = textarea.value.split('\n');
+        }
+    });
+
+    // 2. Limpa e preenche a Planilha Destino
+    const planilhaDestino = document.querySelector("#planilhaDestino tbody");
+    planilhaDestino.innerHTML = "";
+
+    const numLinhas = dados["colNome"] ? dados["colNome"].length : 0;
+    
+    for (let i = 0; i < numLinhas; i++) {
+        if (dados["colNome"][i].trim()) {
+            let linhaHTML = `<tr><td>${i + 1}</td>`; // Coluna de índice
             
-            if (nomeNovaColuna) {
-                const id = nomeNovaColuna.toLowerCase().replace(/\s+/g, '-');
-                colunas.push({ id, nome: nomeNovaColuna });
+            // Adiciona TODAS as colunas (inclusive as novas)
+            document.querySelectorAll("#planilhaFonte th").forEach((th, colIndex) => {
+                const colunaId = th.id || `coluna-${colIndex}`;
+                const valor = dados[colunaId] ? dados[colunaId][i] || '' : '';
+                linhaHTML += `<td contenteditable="true">${valor}</td>`;
+            });
+            
+            linhaHTML += "</tr>";
+            planilhaDestino.innerHTML += linhaHTML;
+        }
+    }
+    
+    if (numLinhas > 0) {
+        showAlert(`Dados organizados com ${numLinhas} registros!`, 'success');
+    } else {
+        showAlert('Nenhum dado válido encontrado para organizar.', 'warning');
+    }
+}
+</script>
+<script>// Variáveis globais para o arrastar colunas
+    let colunas = [
+        { id: "nome", nome: "Nome" },
+        { id: "idade", nome: "Idade" },
+        { id: "telefone", nome: "Telefone" },
+        { id: "genero", nome: "Gênero" },
+        { id: "sexo", nome: "Sexo" },
+        { id: "escolaridade", nome: "Escolaridade" },
+        { id: "profissao", nome: "Profissão" }
+    ];
+    
+    let draggedCol = null;
+    let draggedIndex = null;
+    
+    // Função para configurar cabeçalhos arrastáveis
+    function setupDraggableColumns() {
+        const headers = document.querySelectorAll("#headerPlanilhaDestino th:not(:first-child)");
+        
+        headers.forEach((header, index) => {
+            header.setAttribute("draggable", "true");
+            header.classList.add("draggable-header");
+            header.setAttribute("data-col", colunas[index].id);
+            
+            header.addEventListener("dragstart", function(e) {
+                draggedCol = this.getAttribute("data-col");
+                draggedIndex = index;
+                this.classList.add("dragging");
+                e.dataTransfer.setData("text/plain", draggedCol);
+            });
+    
+            header.addEventListener("dragend", function() {
+                this.classList.remove("dragging");
+                document.querySelectorAll(".drop-target").forEach(el => {
+                    el.classList.remove("drop-target");
+                });
+            });
+        });
+    
+        headers.forEach(header => {
+            header.addEventListener("dragover", function(e) {
+                e.preventDefault();
+                const targetCol = this.getAttribute("data-col");
+                if (draggedCol !== targetCol) {
+                    this.classList.add("drop-target");
+                }
+            });
+    
+            header.addEventListener("dragleave", function() {
+                this.classList.remove("drop-target");
+            });
+    
+            header.addEventListener("drop", function(e) {
+                e.preventDefault();
+                this.classList.remove("drop-target");
                 
-                // ... seu código existente de adicionar coluna ...
+                const targetCol = this.getAttribute("data-col");
+                const targetIndex = colunas.findIndex(col => col.id === targetCol);
                 
-                // Atualiza o arrastar
-                reorganizarPlanilhaDestino();
+                if (draggedCol && draggedIndex !== null && draggedCol !== targetCol) {
+                    // Move a coluna no array
+                    const movedCol = colunas.splice(draggedIndex, 1)[0];
+                    colunas.splice(targetIndex, 0, movedCol);
+                    
+                    // Atualiza a exibição
+                    reorganizarPlanilhaDestino();
+                }
+            });
+        });
+    }
+    
+    // Função para reorganizar a Planilha Destino após mover colunas
+    function reorganizarPlanilhaDestino() {
+        const header = document.getElementById("headerPlanilhaDestino");
+        const tbody = document.querySelector("#planilhaDestino tbody");
+        
+        // Atualiza cabeçalhos
+        header.innerHTML = "<th>#</th>";
+        colunas.forEach(col => {
+            const th = document.createElement("th");
+            th.textContent = col.nome;
+            th.setAttribute("data-col", col.id);
+            th.setAttribute("draggable", "true");
+            th.classList.add("draggable-header");
+            header.appendChild(th);
+        });
+        
+        // Reorganiza os dados
+        const linhas = tbody.querySelectorAll("tr");
+        linhas.forEach(linha => {
+            const cells = Array.from(linha.querySelectorAll("td")).slice(1); // Ignora o primeiro td (index)
+            const novaOrdem = [];
+            
+            colunas.forEach(col => {
+                const cell = cells.find(c => c.getAttribute("data-col") === col.id);
+                if (cell) novaOrdem.push(cell.outerHTML);
+            });
+            
+            linha.innerHTML = `<td>${linha.cells[0].textContent}</td>` + novaOrdem.join("");
+        });
+        
+        // Reativa os listeners
+        setupDraggableColumns();
+    }
+    
+    // Inicializa quando a Planilha Destino é criada
+    document.getElementById("btnOrganizarDados").addEventListener("click", function() {
+        // ... seu código existente de organizarDados() ...
+        
+        // Adiciona isso no final da função:
+        setTimeout(() => {
+            // Adiciona data-col às células
+            document.querySelectorAll("#planilhaDestino tbody tr").forEach((linha, i) => {
+                const cells = linha.querySelectorAll("td");
+                cells.forEach((cell, j) => {
+                    if (j > 0) { // Ignora o primeiro td (index)
+                        cell.setAttribute("data-col", colunas[j-1].id);
+                    }
+                });
+            });
+            
+            setupDraggableColumns();
+        }, 0);
+    });
+    
+    // Adicione também quando criar novas colunas
+    document.getElementById("btnAdicionarColuna").addEventListener("click", function() {
+        const nomeNovaColuna = prompt("Digite o nome da nova coluna:");
+        
+        if (nomeNovaColuna) {
+            const id = nomeNovaColuna.toLowerCase().replace(/\s+/g, '-');
+            colunas.push({ id, nome: nomeNovaColuna });
+            
+            // ... seu código existente de adicionar coluna ...
+            
+            // Atualiza o arrastar
+            reorganizarPlanilhaDestino();
+        }
+    });</script>
+    <script>// Adicione isso no seu objeto de comandos da IA (dentro do btnExecutarIA)
+        const comandosIA = {
+            // COMANDOS EXISTENTES (mantenha esses)
+            "quantas linhas existem?": (dados) => `Total de registros: ${dados.length}`,
+            "quem é a pessoa mais velha?": (dados) => {
+                const maisVelho = dados.reduce((prev, current) => (prev.idade > current.idade) ? prev : current);
+                return `Mais velho(a): ${maisVelho.nome} (${maisVelho.idade} anos)`;
+            },
+        
+            // NOVOS COMANDOS (adicione esses)
+            "quais profissões existem?": (dados) => {
+                const profissoes = [...new Set(dados.map(item => item.profissao))].filter(Boolean);
+                return `Profissões encontradas:\n- ${profissoes.join("\n- ")}`;
+            },
+            "filtrar por gênero": (dados) => {
+                const genero = prompt("Digite o gênero para filtrar (ex: Masculino, Feminino):");
+                const filtrados = dados.filter(item => item.genero?.toLowerCase() === genero?.toLowerCase());
+                return `${filtrados.length} pessoas do gênero ${genero}:\n` + 
+                       filtrados.map(p => `- ${p.nome} (${p.idade} anos)`).join("\n");
+            },
+            "média de idade": (dados) => {
+                const media = dados.reduce((sum, item) => sum + (item.idade || 0), 0) / dados.length;
+                return `Média de idade: ${media.toFixed(1)} anos`;
+            },
+            "localizar email": (dados) => {
+                const termo = prompt("Digite parte do e-mail para buscar:").toLowerCase();
+                const resultados = dados.filter(item => item.email?.toLowerCase().includes(termo));
+                return resultados.map(p => `- ${p.nome}: ${p.email}`).join("\n") || "Nenhum e-mail encontrado";
+            },
+            "contar por escolaridade": (dados) => {
+                const contagem = {};
+                dados.forEach(item => {
+                    const esc = item.escolaridade || "Não informado";
+                    contagem[esc] = (contagem[esc] || 0) + 1;
+                });
+                return "Contagem por escolaridade:\n" + 
+                       Object.entries(contagem).map(([k, v]) => `- ${k}: ${v}`).join("\n");
+            },
+            "sugerir análise": () => {
+                return "📊 Sugestões de análise:\n" +
+                       "1. 'Quem tem mais de 30 anos?'\n" +
+                       "2. 'Mostre pessoas com ensino superior'\n" +
+                       "3. 'Filtrar por profissão: Professor'\n" +
+                       "4. 'Quais e-mails são do Gmail?'";
+            },
+            "dados faltantes": (dados) => {
+                const campos = ["telefone", "email", "idade"];
+                const faltando = campos.map(campo => ({
+                    campo,
+                    total: dados.filter(item => !item[campo]).length
+                }));
+                return "Dados faltantes:\n" + 
+                       faltando.map(f => `- ${f.campo}: ${f.total}`).join("\n");
+            },
+            "exportar contatos": (dados) => {
+                const csv = ["Nome,Telefone,Email"];
+                dados.forEach(item => {
+                    csv.push(`"${item.nome}","${item.telefone || ''}","${item.email || ''}"`);
+                });
+                const blob = new Blob([csv.join("\n")], { type: "text/csv" });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = "contatos.csv";
+                a.click();
+                return "📩 Contatos exportados como CSV!";
             }
-        });</script>
+        };
+        
+        // Dentro do btnExecutarIA, substitua o switch por:
+        const comando = prompt.toLowerCase();
+        const acaoIA = Object.entries(comandosIA).find(([key]) => comando.includes(key.toLowerCase()))?.[1];
+        
+        if (acaoIA) {
+            const resultado = acaoIA(dados);
+            document.getElementById("iaResult").innerHTML = resultado;
+        } else {
+            document.getElementById("iaResult").innerHTML = "🤖 Comando não reconhecido. Tente:\n" +
+                Object.keys(comandosIA).map(c => `- "${c}"`).join("\n");
+        }</script>
 </body>
 </html>
